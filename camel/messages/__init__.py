@@ -41,7 +41,7 @@ OpenAIAssistantMessage = Union[
 OpenAIUserMessage = ChatCompletionUserMessageParam
 OpenAIToolMessageParam = ChatCompletionToolMessageParam
 
-OpenAIMessage = ChatCompletionMessageParam
+OpenAIMessage = ChatCompletionMessageParam  # 通过OpenAIMessage别名，可以表示ChatCompletionMessageParam中的任意一种消息参数类型
 
 
 from .base import BaseMessage  # noqa: E402

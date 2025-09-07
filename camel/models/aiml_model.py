@@ -52,7 +52,7 @@ class AIMLModel(OpenAICompatibleModel):
             initialization.
     """
 
-    @api_keys_required([("api_key", "AIML_API_KEY")])
+    @api_keys_required([("api_key", "AIML_API_KEY")])  # 检查AIML_API_KEY是否存在
     def __init__(
         self,
         model_type: Union[ModelType, str],
@@ -65,7 +65,7 @@ class AIMLModel(OpenAICompatibleModel):
         **kwargs: Any,
     ) -> None:
         if model_config_dict is None:
-            model_config_dict = AIMLConfig().as_dict()
+            model_config_dict = AIMLConfig().as_dict()  # 获取AIMLConfig的配置
         api_key = api_key or os.environ.get("AIML_API_KEY")
         url = url or os.environ.get(
             "AIML_API_BASE_URL",

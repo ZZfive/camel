@@ -251,7 +251,7 @@ def get_langfuse_status() -> Dict[str, Any]:
     return status
 
 
-def observe(*args, **kwargs):
+def observe(*args, **kwargs):  # 一个什么都没做的装饰器
     def decorator(func):
         return func
 

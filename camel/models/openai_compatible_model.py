@@ -40,12 +40,12 @@ from camel.utils import (
     update_langfuse_trace,
 )
 
-if os.environ.get("LANGFUSE_ENABLED", "False").lower() == "true":
+if os.environ.get("LANGFUSE_ENABLED", "False").lower() == "true":  # 判断是否启用Langfuse
     try:
         from langfuse.decorators import observe
     except ImportError:
         from camel.utils import observe
-elif os.environ.get("TRACEROOT_ENABLED", "False").lower() == "true":
+elif os.environ.get("TRACEROOT_ENABLED", "False").lower() == "true":  # 判断是否启用Traceroot
     try:
         from traceroot import trace as observe  # type: ignore[import]
     except ImportError:
@@ -180,19 +180,19 @@ class OpenAICompatibleModel(BaseModelBackend):
                     "model_type": str(self.model_type),
                 },
                 tags=["CAMEL-AI", str(self.model_type)],
-            )
+            )  # 更新Langfuse trace
 
         response_format = response_format or self.model_config_dict.get(
             "response_format", None
-        )
+        )  # 获取响应格式
 
         # Check if streaming is enabled
-        is_streaming = self.model_config_dict.get("stream", False)
+        is_streaming = self.model_config_dict.get("stream", False)  # 判断是否启用流式
 
         if response_format:
             result: Union[ChatCompletion, Stream[ChatCompletionChunk]] = (
                 self._request_parse(messages, response_format, tools)
-            )
+            )  # 使用解析方法获取结果
             if is_streaming:
                 # Use streaming parse for structured output
                 return self._request_stream_parse(
@@ -202,7 +202,7 @@ class OpenAICompatibleModel(BaseModelBackend):
                 # Use non-streaming parse for structured output
                 return self._request_parse(messages, response_format, tools)
         else:
-            result = self._request_chat_completion(messages, tools)
+            result = self._request_chat_completion(messages, tools)  # 使用请求方法获取结果
 
         return result
 
@@ -274,7 +274,7 @@ class OpenAICompatibleModel(BaseModelBackend):
 
         return result
 
-    def _request_chat_completion(
+    def _request_chat_completion(  # 请求ChatCompletion
         self,
         messages: List[OpenAIMessage],
         tools: Optional[List[Dict[str, Any]]] = None,
@@ -290,7 +290,7 @@ class OpenAICompatibleModel(BaseModelBackend):
             **request_config,
         )
 
-    async def _arequest_chat_completion(
+    async def _arequest_chat_completion(  # 异步请求ChatCompletion
         self,
         messages: List[OpenAIMessage],
         tools: Optional[List[Dict[str, Any]]] = None,

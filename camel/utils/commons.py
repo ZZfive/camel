@@ -276,13 +276,13 @@ def api_keys_required(
     def decorator(func: F) -> F:
         @wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> Any:
-            signature = inspect.signature(func)
-            bound_arguments = signature.bind(*args, **kwargs)
-            bound_arguments.apply_defaults()
-            arguments = bound_arguments.arguments
+            signature = inspect.signature(func)  # 获取函数签名
+            bound_arguments = signature.bind(*args, **kwargs)  # 绑定参数
+            bound_arguments.apply_defaults()  # 应用默认值
+            arguments = bound_arguments.arguments  # 获取参数
 
             missing_keys = []
-            for param_name, env_var_name in param_env_list:
+            for param_name, env_var_name in param_env_list:  # 遍历参数和环境变量
                 if not isinstance(env_var_name, str):
                     raise TypeError(
                         f"Environment variable name must be a string, got"
@@ -291,7 +291,7 @@ def api_keys_required(
 
                 value = None
                 if (
-                    param_name
+                    param_name  # 优先检查函数参数
                 ):  # If param_name is provided, check function argument first
                     if not isinstance(param_name, str):
                         raise TypeError(
@@ -357,7 +357,7 @@ def api_keys_required(
             elif env_var_name == 'XAI_API_KEY':
                 key_way = "https://api.x.ai/v1"
 
-            if missing_keys:
+            if missing_keys:  # 如果有缺失的keys，抛出详细的错误信息
                 raise ValueError(
                     "Missing or empty required API keys in "
                     f"environment variables: {', '.join(missing_keys)}.\n"

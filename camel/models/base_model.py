@@ -26,13 +26,13 @@ from pydantic import BaseModel
 
 from camel.messages import OpenAIMessage
 from camel.types import (
-    ChatCompletion,
-    ChatCompletionChunk,
-    ModelType,
+    ChatCompletion,  # 直接引用openai库中的ChatCompletion类
+    ChatCompletionChunk,  # 直接引用openai库中的ChatCompletionChunk类
+    ModelType,  # 定义的各种模型类型的枚举
     ParsedChatCompletion,
-    UnifiedModelType,
+    UnifiedModelType,  # 定义的统一模型类型的类
 )
-from camel.utils import BaseTokenCounter
+from camel.utils import BaseTokenCounter  # 定义的Token计数基类
 
 
 class ModelBackendMeta(abc.ABCMeta):
@@ -44,14 +44,14 @@ class ModelBackendMeta(abc.ABCMeta):
     """
 
     def __new__(mcs, name, bases, namespace):
-        r"""Wraps run method with preprocessing if it exists in the class."""
-        if 'run' in namespace:
+        r"""Wraps run method with preprocessing if it exists in the class. 如果类中存在run方法，则自动包装该方法，在调用原始run方法之前，先调用preprocess_messages方法，对消息进行预处理"""
+        if 'run' in namespace:  # 自动检测到类中是否存在run方法
             original_run = namespace['run']
 
             def wrapped_run(
                 self, messages: List[OpenAIMessage], *args, **kwargs
             ):
-                messages = self.preprocess_messages(messages)
+                messages = self.preprocess_messages(messages)  # 在调用原始run方法之前，先调用preprocess_messages方法，对消息进行预处理
                 return original_run(self, messages, *args, **kwargs)
 
             namespace['run'] = wrapped_run
@@ -103,11 +103,11 @@ class BaseModelBackend(ABC, metaclass=ModelBackendMeta):
         self._log_enabled = (
             os.environ.get("CAMEL_MODEL_LOG_ENABLED", "False").lower()
             == "true"
-        )
-        self._log_dir = os.environ.get("CAMEL_LOG_DIR", "camel_logs")
+        )  # 是否启用日志
+        self._log_dir = os.environ.get("CAMEL_LOG_DIR", "camel_logs")  # 日志保存目录
 
     @property
-    @abstractmethod
+    @abstractmethod  # 抽象方法，子类必须实现
     def token_counter(self) -> BaseTokenCounter:
         r"""Initialize the token counter for the model backend.
 
@@ -123,7 +123,7 @@ class BaseModelBackend(ABC, metaclass=ModelBackendMeta):
         r"""Preprocess messages before sending to model API.
         Removes thinking content from assistant and user messages.
         Automatically formats messages for parallel tool calls if tools are
-        detected.
+        detected. 预处理消息，移除思考内容，自动格式化消息用于并行工具调用
 
         Args:
             messages (List[OpenAIMessage]): Original messages.
@@ -145,13 +145,13 @@ class BaseModelBackend(ABC, metaclass=ModelBackendMeta):
                 if '<think>' in content and '</think>' in content:
                     content = re.sub(
                         r'<think>.*?</think>', '', content, flags=re.DOTALL
-                    ).strip()
+                    ).strip()  # 移除思考标签及之间的内容
                 processed_msg = dict(msg)
                 processed_msg['content'] = content
             else:
                 processed_msg = dict(msg)
 
-            # Check and track tool calls/responses
+            # Check and track tool calls/responses  检查和处理工具调用
             is_tool_call = (
                 processed_msg.get("role") == "assistant"
                 and "tool_calls" in processed_msg

@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     from camel.types import ModelType
 
 
-class UnifiedModelType(str):
+class UnifiedModelType(str):  # 继承至str类，可以像字符串一样使用
     r"""Class used for support both :obj:`ModelType` and :obj:`str` to be used
     to represent a model type in a unified way. This class is a subclass of
     :obj:`str` so that it can be used as string seamlessly.
@@ -29,8 +29,8 @@ class UnifiedModelType(str):
         value (Union[ModelType, str]): The value of the model type.
     """
 
-    _cache: ClassVar[Dict[str, "UnifiedModelType"]] = {}
-    _lock: ClassVar[Lock] = Lock()
+    _cache: ClassVar[Dict[str, "UnifiedModelType"]] = {}  # 定义一个类变量_cache，用于缓存已经创建的UnifiedModelType实例
+    _lock: ClassVar[Lock] = Lock()  # 定义一个类变量_lock，用于线程锁
 
     def __new__(cls, value: Union["ModelType", str]) -> "UnifiedModelType":
         if isinstance(value, Enum):
@@ -41,9 +41,9 @@ class UnifiedModelType(str):
         with cls._lock:
             if str_value not in cls._cache:
                 instance = super().__new__(cls, str_value)
-                cls._cache[str_value] = cast(UnifiedModelType, instance)
+                cls._cache[str_value] = cast(UnifiedModelType, instance)  # 将instance转换为UnifiedModelType类型，并缓存到_cache中
             else:
-                instance = cls._cache[str_value]
+                instance = cls._cache[str_value]  # 如果已经存在，则直接从_cache中获取；相同的模型名称只创建一个实例
         return instance
 
     def __init__(self, value: Union["ModelType", str]) -> None:
