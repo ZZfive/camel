@@ -33,7 +33,7 @@ class ChatHistoryMemory(AgentMemory):
             will be used. (default: :obj:`None`)
         window_size (int, optional): The number of recent chat messages to
             retrieve. If not provided, the entire chat history will be
-            retrieved.  (default: :obj:`None`)
+            retrieved.  (default: :obj:`None`) 对历史聊天信息中检索的窗口大小，如果未提供，则检索整个聊天历史。
         agent_id (str, optional): The ID of the agent associated with the chat
             history.
     """

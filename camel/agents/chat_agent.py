@@ -49,7 +49,7 @@ from pydantic import BaseModel, ValidationError
 
 from camel.agents._types import ModelResponse, ToolCallRequest
 from camel.agents._utils import (
-    convert_to_function_tool,
+    convert_to_function_tool,  # 将函数转换为FunctionTool
     convert_to_schema,
     get_info_dict,
     handle_logprobs,
@@ -60,7 +60,7 @@ from camel.logger import get_logger
 from camel.memories import (
     AgentMemory,
     ChatHistoryMemory,
-    MemoryRecord,
+    MemoryRecord,  # 基础的记忆存储单元
     ScoreBasedContextCreator,
 )
 from camel.memories.blocks.chat_history_block import EmptyMemoryWarning
@@ -126,7 +126,7 @@ else:
 
 
 SIMPLE_FORMAT_PROMPT = TextPrompt(
-    textwrap.dedent(
+    textwrap.dedent(  # 自动去除文本的缩进
         """\
         Please format the following content:
         
@@ -453,12 +453,12 @@ class ChatAgent(BaseAgent):
         self.model_type = self.model_backend.model_type
 
         # Assign unique ID
-        self.agent_id = agent_id if agent_id else str(uuid.uuid4())
+        self.agent_id = agent_id if agent_id else str(uuid.uuid4())  # 分配唯一ID
 
         # Set up memory
         context_creator = ScoreBasedContextCreator(
-            self.model_backend.token_counter,
-            token_limit or self.model_backend.token_limit,
+            self.model_backend.token_counter,  # tokens计数器
+            token_limit or self.model_backend.token_limit,  # tokens上线
         )
 
         self._memory: AgentMemory = memory or ChatHistoryMemory(
@@ -482,8 +482,8 @@ class ChatAgent(BaseAgent):
         self._output_language = output_language
         self._system_message = (
             self._generate_system_message_for_output_language()
-        )
-        self.init_messages()
+        )  # 基于输出语言生成生成最终的系统消息
+        self.init_messages()  # 将系统消息添加到记忆中
 
         # Set up role name and role type
         self.role_name: str = (
@@ -500,13 +500,13 @@ class ChatAgent(BaseAgent):
             for tool in [
                 convert_to_function_tool(tool) for tool in (tools or [])
             ]
-        }
+        }  # 将工具转换为FunctionTool
 
         # Register agent with toolkits that have RegisteredAgentToolkit mixin
         if toolkits_to_register_agent:
             for toolkit in toolkits_to_register_agent:
                 if isinstance(toolkit, RegisteredAgentToolkit):
-                    toolkit.register_agent(self)
+                    toolkit.register_agent(self)  # 注册工具
 
         self._external_tool_schemas = {
             tool_schema["function"]["name"]: tool_schema
@@ -1056,8 +1056,8 @@ class ChatAgent(BaseAgent):
         Returns:
             BaseMessage: The new system message.
         """
-        if not self._output_language:
-            return self._original_system_message
+        if not self._output_language:  # 如果输出语言为None
+            return self._original_system_message  # 返回原始系统消息
 
         language_prompt = (
             "\nRegardless of the input language, "
@@ -1393,7 +1393,7 @@ class ChatAgent(BaseAgent):
             TimeoutError: If the step operation exceeds the configured timeout.
         """
 
-        stream = self.model_backend.model_config_dict.get("stream", False)
+        stream = self.model_backend.model_config_dict.get("stream", False)  # 判断是否启用流式
 
         if stream:
             # Return wrapped generator that has ChatAgentResponse interface
@@ -1447,17 +1447,17 @@ class ChatAgent(BaseAgent):
             )
 
         # Add user input to memory
-        self.update_memory(input_message, OpenAIBackendRole.USER)
+        self.update_memory(input_message, OpenAIBackendRole.USER)  # 将用户输入添加到记忆中
 
-        tool_call_records: List[ToolCallingRecord] = []
-        external_tool_call_requests: Optional[List[ToolCallRequest]] = None
+        tool_call_records: List[ToolCallingRecord] = []  # 工具调用记录
+        external_tool_call_requests: Optional[List[ToolCallRequest]] = None  # 额外工具调用请求
 
         accumulated_context_tokens = (
             0  # This tracks cumulative context tokens, not API usage tokens
         )
 
         # Initialize token usage tracker
-        step_token_usage = self._create_token_usage_tracker()
+        step_token_usage = self._create_token_usage_tracker()  # 初始化tokens使用追踪器
         iteration_count: int = 0
         prev_num_openai_messages: int = 0
 

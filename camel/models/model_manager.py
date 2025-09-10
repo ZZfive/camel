@@ -72,19 +72,19 @@ class ModelManager:
             self.models = models
         else:
             self.models = [models]
-        self.models_cycle = cycle(self.models)
+        self.models_cycle = cycle(self.models)  # 创建一个循环迭代器，用于轮流选择模型
         self.current_model = self.models[0]
         self.lock = asyncio.Lock()
 
         # Set the scheduling strategy; default is round-robin
         try:
-            self.scheduling_strategy = getattr(self, scheduling_strategy)
+            self.scheduling_strategy = getattr(self, scheduling_strategy)  # 获取调度策略
         except AttributeError:
             logger.warning(
                 f"Provided strategy: {scheduling_strategy} is not implemented."
                 f"Using default 'round robin'"
             )
-            self.scheduling_strategy = self.round_robin
+            self.scheduling_strategy = self.round_robin  # 如果调度策略不存在，则使用默认的轮流选择模型
 
     @property
     def model_type(self) -> UnifiedModelType:

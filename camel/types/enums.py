@@ -1522,11 +1522,11 @@ class TerminationMode(Enum):
 
 
 class OpenAIImageTypeMeta(EnumMeta):
-    def __contains__(cls, image_type: object) -> bool:
+    def __contains__(cls, image_type: object) -> bool:  # 重写__contains__方法，用于支持in操作符，用于检查枚举成员是否存在
         try:
-            cls(image_type)
+            cls(image_type)  # 如果image_type是枚举成员，则返回True
         except ValueError:
-            return False
+            return False  # 如果image_type不是枚举成员，则返回False
         return True
 
 

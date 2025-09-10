@@ -124,7 +124,7 @@ def set_current_agent_session_id(session_id: str) -> None:
         session_id(str): The session ID to set for the current agent.
     """
 
-    _local.agent_session_id = session_id
+    _local.agent_session_id = session_id  # 设置当前代理的会话ID
 
 
 def get_current_agent_session_id() -> Optional[str]:

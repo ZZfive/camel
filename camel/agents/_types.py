@@ -24,22 +24,22 @@ from camel.types import ChatCompletion
 class ToolCallRequest(BaseModel):
     r"""The request for tool calling."""
 
-    tool_name: str
-    args: Dict[str, Any]
-    tool_call_id: str
+    tool_name: str  # 工具名称
+    args: Dict[str, Any]  # 参数
+    tool_call_id: str  # 工具调用ID
 
 
 class ModelResponse(BaseModel):
     r"""The response from the model."""
 
-    model_config = ConfigDict(arbitrary_types_allowed=True)
+    model_config = ConfigDict(arbitrary_types_allowed=True)  # 允许任意类型的参数
     response: Union[
         ChatCompletion,
         Stream[ChatCompletionChunk],
         AsyncStream[ChatCompletionChunk],
-    ]
-    tool_call_requests: Optional[List[ToolCallRequest]]
-    output_messages: List[BaseMessage]
-    finish_reasons: List[str]
-    usage_dict: Dict[str, Any]
-    response_id: str
+    ]  # 响应类型
+    tool_call_requests: Optional[List[ToolCallRequest]]  # 工具调用请求
+    output_messages: List[BaseMessage]  # 输出消息
+    finish_reasons: List[str]  # 完成原因
+    usage_dict: Dict[str, Any]  # 使用字典
+    response_id: str  # 响应ID

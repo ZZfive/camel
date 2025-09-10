@@ -105,19 +105,19 @@ class ModelFactory:
         ModelPlatformType.WATSONX: WatsonXModel,
         ModelPlatformType.QIANFAN: QianfanModel,
         ModelPlatformType.CRYNUX: CrynuxModel,
-    }
+    }  # 模型平台到具体模型类的映射
 
     @staticmethod
     def create(
-        model_platform: Union[ModelPlatformType, str],
-        model_type: Union[ModelType, str, UnifiedModelType],
-        model_config_dict: Optional[Dict] = None,
-        token_counter: Optional[BaseTokenCounter] = None,
-        api_key: Optional[str] = None,
-        url: Optional[str] = None,
-        timeout: Optional[float] = None,
-        max_retries: int = 3,
-        **kwargs,
+        model_platform: Union[ModelPlatformType, str],  # 模型平台
+        model_type: Union[ModelType, str, UnifiedModelType],  # 具体模型型号
+        model_config_dict: Optional[Dict] = None,  # 模型配置
+        token_counter: Optional[BaseTokenCounter] = None,  # 令牌计数器
+        api_key: Optional[str] = None,  #  API密钥
+        url: Optional[str] = None,  #  URL
+        timeout: Optional[float] = None,  # 超时时间
+        max_retries: int = 3,  # 最大重试次数
+        **kwargs,  # 额外参数
     ) -> BaseModelBackend:
         r"""Creates an instance of `BaseModelBackend` of the specified type.
 
@@ -156,7 +156,7 @@ class ModelFactory:
         """
 
         # Auto-configure Langfuse only if explicitly enabled
-        env_enabled_str = os.environ.get("LANGFUSE_ENABLED")
+        env_enabled_str = os.environ.get("LANGFUSE_ENABLED")  # 获取环境变量LANGFUSE_ENABLED
         if env_enabled_str and env_enabled_str.lower() == "true":
             configure_langfuse()
 
@@ -180,10 +180,10 @@ class ModelFactory:
 
         model_class = ModelFactory._MODEL_PLATFORM_TO_CLASS_MAP.get(
             model_platform
-        )
+        )  # 获取模型平台对应的模型类
 
         if model_type == ModelType.STUB:
-            model_class = StubModel
+            model_class = StubModel  # 如果模型类型为STUB，则使用StubModel
 
         if model_class is None:
             raise ValueError(f"Unknown model platform `{model_platform}`")

@@ -50,7 +50,7 @@ class ChatHistoryBlock(MemoryBlock):
             last message is 1.0, and with each step taken backward, the score
             of the message is multiplied by the `keep_rate`. Higher `keep_rate`
             leads to high possibility to keep history messages during context
-            creation. (default: :obj:`0.9`)
+            creation. (default: :obj:`0.9`) 在历史消息中，最后一条消息的分数为1.0，每向后退一步，消息的分数就乘以`keep_rate`。`keep_rate`越高，在上下文创建过程中保留历史消息的可能性就越大。
     """
 
     def __init__(
@@ -60,7 +60,7 @@ class ChatHistoryBlock(MemoryBlock):
     ) -> None:
         if keep_rate > 1 or keep_rate < 0:
             raise ValueError("`keep_rate` should be in [0,1]")
-        self.storage = storage or InMemoryKeyValueStorage()
+        self.storage = storage or InMemoryKeyValueStorage()  # 使用InMemoryKeyValueStorage作为默认存储
         self.keep_rate = keep_rate
 
     def retrieve(

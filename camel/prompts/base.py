@@ -50,26 +50,26 @@ def return_prompt_wrapper(
             Union[Any, str]: The converted return value.
         """
         result = func(*args, **kwargs)
-        if isinstance(result, str) and not isinstance(result, cls):
-            return cls(result)
-        elif isinstance(result, tuple):
+        if isinstance(result, str) and not isinstance(result, cls):  # 如果函数返回字符串且不是目标类实例
+            return cls(result)  # 转换为目标类实例
+        elif isinstance(result, tuple):  # 如果函数返回元组
             new_result = tuple(
                 cls(item)
                 if isinstance(item, str) and not isinstance(item, cls)
                 else item
                 for item in result
-            )
+            )  # 递归转换元组中的每个元素
             return new_result
-        return result
+        return result  # 其他类型返回值保持不变
 
-    # # Preserve the original function's attributes
-    wrapper.__name__ = func.__name__
-    wrapper.__doc__ = func.__doc__
+    # # Preserve the original function's attributes 保留原始函数属性
+    wrapper.__name__ = func.__name__  # 包装函数名称
+    wrapper.__doc__ = func.__doc__  # 包装函数文档
 
     return wrapper
 
 
-def wrap_prompt_functions(cls: T) -> T:
+def wrap_prompt_functions(cls: T) -> T:  # 自动包装类中非排除的所有可调用方法
     r"""Decorator that wraps functions of a class inherited from :obj:`str`
     with the :obj:`return_text_prompt` decorator.
 
@@ -79,16 +79,16 @@ def wrap_prompt_functions(cls: T) -> T:
     Returns:
         type: Decorated class with wrapped functions.
     """
-    excluded_attrs = {'__init__', '__new__', '__str__', '__repr__'}
-    for attr_name in dir(cls):
-        attr_value = getattr(cls, attr_name)
-        if callable(attr_value) and attr_name not in excluded_attrs:
-            if inspect.isroutine(attr_value):
+    excluded_attrs = {'__init__', '__new__', '__str__', '__repr__'}  # 存储不需要包装的类
+    for attr_name in dir(cls):  # 遍历类的所有属性
+        attr_value = getattr(cls, attr_name)  # 获取属性值
+        if callable(attr_value) and attr_name not in excluded_attrs:  # 如果属性值是可调用的，并且属性名不在排除列表中
+            if inspect.isroutine(attr_value):  # 确保属性值是可调用的
                 setattr(cls, attr_name, return_prompt_wrapper(cls, attr_value))
     return cls
 
 
-@wrap_prompt_functions
+@wrap_prompt_functions  # 类装饰器，会将被装饰类中的所有可调用方法的返回值转换为TextPrompt类的实例
 class TextPrompt(str):
     r"""A class that represents a text prompt. The :obj:`TextPrompt` class
     extends the built-in :obj:`str` class to provide a property for retrieving
@@ -104,7 +104,7 @@ class TextPrompt(str):
         r"""Returns a set of strings representing the keywords in the prompt."""
         from camel.utils import get_prompt_template_key_words
 
-        return get_prompt_template_key_words(self)
+        return get_prompt_template_key_words(self)  # 获取提示词中的关键词
 
     def format(self, *args: Any, **kwargs: Any) -> 'TextPrompt':
         r"""Overrides the built-in :obj:`str.format` method to allow for
@@ -119,9 +119,9 @@ class TextPrompt(str):
             TextPrompt: A new :obj:`TextPrompt` object with the format string
                 replaced with the formatted string.
         """
-        default_kwargs = {key: '{' + f'{key}' + '}' for key in self.key_words}
+        default_kwargs = {key: '{' + f'{key}' + '}' for key in self.key_words}  # 创建默认关键词字典
         default_kwargs.update(kwargs)
-        return TextPrompt(super().format(*args, **default_kwargs))
+        return TextPrompt(super().format(*args, **default_kwargs))  # 使用父类方法格式化字符串
 
 
 @wrap_prompt_functions
